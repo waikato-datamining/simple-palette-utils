@@ -492,6 +492,16 @@ def parse_rgba(color_list: List[str]) -> List[Tuple[int, int, int, int]]:
     return result
 
 
+def palettes() -> List[str]:
+    """
+    Returns the sorted list of palette names.
+
+    :return: the list of names
+    :rtype: list
+    """
+    return sorted(PALETTES.keys())
+
+
 def color_lists() -> List[str]:
     """
     Returns the sorted list of color list names.
