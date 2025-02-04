@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - added missing typing hint imports
+- added ability to extend color lists and palettes with custom ones
+- added `palette_list_to_triplets` method to convert flat list into list of R,G,B tuples
 
 
 0.0.3 (2025-02-04)

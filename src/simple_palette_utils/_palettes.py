@@ -298,17 +298,17 @@ PALETTE_COLORBLIND8 = "colorblind8"
 PALETTE_COLORBLIND12 = "colorblind12"
 PALETTE_COLORBLIND15 = "colorblind15"
 PALETTE_COLORBLIND24 = "colorblind24"
-PALETTES = [
-    PALETTE_AUTO,
-    PALETTE_GRAYSCALE,
-    PALETTE_X11,
-    PALETTE_LIGHT,
-    PALETTE_DARK,
-    PALETTE_COLORBLIND8,
-    PALETTE_COLORBLIND12,
-    PALETTE_COLORBLIND15,
-    PALETTE_COLORBLIND24,
-]
+PALETTES = {
+    PALETTE_AUTO: None,
+    PALETTE_GRAYSCALE: None,
+    PALETTE_X11: X11_COLORS,
+    PALETTE_LIGHT: LIGHT_COLORS,
+    PALETTE_DARK: DARK_COLORS,
+    PALETTE_COLORBLIND8: COLORBLIND8_COLORS,
+    PALETTE_COLORBLIND12: COLORBLIND12_COLORS,
+    PALETTE_COLORBLIND15: COLORBLIND15_COLORS,
+    PALETTE_COLORBLIND24: COLORBLIND24_COLORS,
+}
 
 
 def colors(color_list: str = COLOR_LIST_X11) -> List[Tuple[int, int, int]]:
@@ -395,60 +395,38 @@ def default_palette(palette: str = None) -> List[int]:
     if palette not in PALETTES:
         raise ValueError("Unknown palette: %s" % palette)
     if palette == PALETTE_AUTO:
-        result = [0, 0, 0,      # black
-                  255, 0, 0,    # red
-                  0, 255, 0,    # green
-                  0, 0, 255,    # blue
-                  255, 0, 255,  # magenta
-                  255, 255, 0,  # yellow
-                  0, 255, 255]  # cyan
+        # custom values?
+        if PALETTES[PALETTE_AUTO] is not None:
+            result = [0, 0, 0]
+            for c in PALETTES[PALETTE_GRAYSCALE]:
+                if c == "#000000":
+                    continue
+                result.extend(ImageColor.getrgb(c))
+        else:
+            result = [0, 0, 0,      # black
+                      255, 0, 0,    # red
+                      0, 255, 0,    # green
+                      0, 0, 255,    # blue
+                      255, 0, 255,  # magenta
+                      255, 255, 0,  # yellow
+                      0, 255, 255]  # cyan
     elif palette == PALETTE_GRAYSCALE:
         result = [0, 0, 0]
-        # fill_palette call further down fills in grayscale colors
-    elif palette == PALETTE_X11:
-        result = [0, 0, 0]
-        for c in X11_COLORS:
-            if c == "#000000":
-                continue
-            result.extend(ImageColor.getrgb(c))
-    elif palette == PALETTE_LIGHT:
-        result = [0, 0, 0]
-        for c in LIGHT_COLORS:
-            if c == "#000000":
-                continue
-            result.extend(ImageColor.getrgb(c))
-    elif palette == PALETTE_DARK:
-        result = [0, 0, 0]
-        for c in DARK_COLORS:
-            if c == "#000000":
-                continue
-            result.extend(ImageColor.getrgb(c))
-    elif palette == PALETTE_COLORBLIND8:
-        result = [0, 0, 0]
-        for c in COLORBLIND8_COLORS:
-            if c == "#000000":
-                continue
-            result.extend(ImageColor.getrgb(c))
-    elif palette == PALETTE_COLORBLIND12:
-        result = [0, 0, 0]
-        for c in COLORBLIND12_COLORS:
-            if c == "#000000":
-                continue
-            result.extend(ImageColor.getrgb(c))
-    elif palette == PALETTE_COLORBLIND15:
-        result = [0, 0, 0]
-        for c in COLORBLIND15_COLORS:
-            if c == "#000000":
-                continue
-            result.extend(ImageColor.getrgb(c))
-    elif palette == PALETTE_COLORBLIND24:
-        result = [0, 0, 0]
-        for c in COLORBLIND24_COLORS:
-            if c == "#000000":
-                continue
-            result.extend(ImageColor.getrgb(c))
+        # custom values?
+        if PALETTES[PALETTE_GRAYSCALE] is not None:
+            for c in PALETTES[PALETTE_GRAYSCALE]:
+                if c == "#000000":
+                    continue
+                result.extend(ImageColor.getrgb(c))
+        else:
+            # fill_palette call further down fills in grayscale colors
+            pass
     else:
-        raise Exception("Unhandled palette: %s" % palette)
+        result = [0, 0, 0]
+        for c in PALETTES[palette]:
+            if c == "#000000":
+                continue
+            result.extend(ImageColor.getrgb(c))
 
     result = fill_palette(result)
     return result
@@ -613,3 +591,46 @@ class ColorProvider:
             return r, g, b
         else:
             return r, g, b, alpha
+
+
+def add_color_list(name: str, values: List[str]):
+    """
+    Adds the color list value under the specified name.
+
+    :param name: the name of the color list
+    :type name: str
+    :param values: the list of hex colors values associated with the name
+    :type values: list
+    """
+    global COLOR_LISTS
+    COLOR_LISTS[name] = values
+
+
+def add_palette(name: str, values: List[str]):
+    """
+    Adds the color list value under the specified name.
+
+    :param name: the name of the color list
+    :type name: str
+    :param values: the list of hex colors values associated with the name
+    :type values: list
+    """
+    global PALETTES
+    PALETTES[name] = values
+
+
+def palette_list_to_triplets(palette: List[int]) -> List[Tuple[int, int, int]]:
+    """
+    Turns a palette list into a list of R,G,B triplets.
+
+    :param palette: the list to convert
+    :type palette: list
+    :return: the list of R,G,B tuples
+    :rtype: list
+    """
+    if len(palette) % 3 != 0:
+        raise Exception("Palette list must have length that is divisible by three, but got: %d" % len(palette))
+    result = []
+    for i in range(0, len(palette), 3):
+        result.append((palette[i], palette[i+1], palette[i+2]))
+    return result
