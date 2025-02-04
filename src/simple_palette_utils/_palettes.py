@@ -474,3 +474,142 @@ def generate_palette_list(palette: str = None) -> List[int]:
     else:
         result = default_palette(palette=palette)
     return result
+
+
+def parse_rgb(color_list: List[str]) -> List[Tuple[int, int, int]]:
+    """
+    Parses the list of RGB triplets (separated by comma) into a list of triplet integers.
+
+    :param color_list: the list of colors to parse
+    :type color_list: list
+    :return: the list of R,G,B tuples
+    :rtype: list
+    """
+    result = []
+    if color_list is not None:
+        for color in color_list:
+            if "," in color:
+                rgb = [int(x) for x in color.split(",")]
+                if len(rgb) == 3:
+                    result.append((rgb[0], rgb[1], rgb[2]))
+    return result
+
+
+def parse_rgba(color_list: List[str]) -> List[Tuple[int, int, int, int]]:
+    """
+    Parses the list of RGBA quadruplets (separated by comma) into a list of quadruplet integers.
+
+    :param color_list: the list of colors to parse
+    :type color_list: list
+    :return: the list of R,G,B,A tuples
+    :rtype: list
+    """
+    result = []
+    if color_list is not None:
+        for color in color_list:
+            if "," in color:
+                rgb = [int(x) for x in color.split(",")]
+                if len(rgb) == 4:
+                    result.append((rgb[0], rgb[1], rgb[2], rgb[3]))
+    return result
+
+
+def color_lists() -> List[str]:
+    """
+    Returns the sorted list of color list names.
+
+    :return: the list of names
+    :rtype: list
+    """
+    return sorted(COLOR_LISTS.keys())
+
+
+class ColorProvider:
+    """
+    Generates RGB triplets of RGBA quadruplets from a predefined colors or custom colors.
+    If the color_list is COLOR_LIST_X11, then no dark and no light colors will be used.
+    """
+
+    def __init__(self, color_list: str = COLOR_LIST_X11, custom_colors: List[Tuple[int, int, int]] = None,
+                 label_mapping: Dict = None):
+        """
+        Initializes the color provider.
+
+        :param color_list: the name of the color list with the default colors to use
+        :type color_list: str
+        :param custom_colors: the list of custom colors to use
+        :type custom_colors: list
+        """
+        if color_list not in COLOR_LISTS:
+            raise Exception("Unknown color list '%s'! Available lists: %s" % (color_list, color_lists()))
+        self._colors = dict()
+        if color_list == COLOR_LIST_X11:
+            self._default_colors = x11_colors()  # no dark, no light
+        else:
+            self._default_colors = colors(color_list)
+        self._default_colors_index = 0
+        self._custom_colors = custom_colors
+        if self._custom_colors is None:
+            self._custom_colors = []
+        self._label_mapping = label_mapping
+        if self._label_mapping is None:
+            self._label_mapping = dict()
+
+    @property
+    def label_mapping(self) -> Dict:
+        """
+        Returns the current label mapping (label/index).
+
+        :return: the label mapping
+        :rtype: dict
+        """
+        return self._label_mapping
+
+    @label_mapping.setter
+    def label_mapping(self, mapping: Dict):
+        """
+        Sets the new label mapping to use (label/index).
+
+        :param mapping: the label mapping
+        :type mapping: dict
+        """
+        self._label_mapping = mapping
+
+    def _next_default_color(self) -> Tuple[int, int, int]:
+        """
+        Returns the next default color.
+
+        :return: the RGB color tuple
+        :rtype: tuple
+        """
+        if self._default_colors_index >= len(self._default_colors):
+            self._default_colors_index = 0
+        result = self._default_colors[self._default_colors_index]
+        self._default_colors_index += 1
+        return result
+
+    def get_color(self, label: str, alpha: int = None) -> Union[Tuple[int, int, int], Tuple[int, int, int, int]]:
+        """
+        Returns the color for the label.
+
+        :param label: the label to get the color for
+        :type label: str
+        :param alpha: the alpha value to use, ignored if None
+        :type alpha: int or None
+        :return: the RGB or RGBA color tuple
+        :rtype: tuple
+        """
+        if label not in self._colors:
+            has_custom = False
+            if label in self._label_mapping:
+                index = self._label_mapping[label]
+                if index < len(self._custom_colors):
+                    has_custom = True
+                    self._colors[label] = self._custom_colors[index]
+            if not has_custom:
+                self._colors[label] = self._next_default_color()
+        r, g, b = self._colors[label]
+        if alpha is None:
+            return r, g, b
+        else:
+            return r, g, b, alpha
