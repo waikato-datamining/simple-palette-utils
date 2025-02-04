@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.0.4 (????-??-??)
+0.0.4 (2025-02-05)
 ------------------
 
 - added missing typing hint imports
