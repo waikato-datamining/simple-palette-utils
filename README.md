@@ -92,21 +92,21 @@ Extending color lists/palettes:
 from simple_palette_utils import colors, generate_palette_list, add_palette, add_color_list
 
 my_colors = [
-"#C0C0C0",
-"#808080",
-"#000000",
-"#FF0000",
-"#800000",
-"#FFFF00",
-"#808000",
-"#00FF00",
-"#008000",
-"#00FFFF",
-"#008080",
-"#0000FF",
-"#000080",
-"#FF00FF",
-"#800080",
+    "#C0C0C0",
+    "#808080",
+    "#000000",
+    "#FF0000",
+    "#800000",
+    "#FFFF00",
+    "#808000",
+    "#00FF00",
+    "#008000",
+    "#00FFFF",
+    "#008080",
+    "#0000FF",
+    "#000080",
+    "#FF00FF",
+    "#800080",
 ]
 add_color_list("mycolors", my_colors)
 add_palette("mycolors", my_colors)
