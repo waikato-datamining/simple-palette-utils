@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Union
 from PIL import ImageColor
 
 # https://en.wikipedia.org/wiki/X11_color_names
