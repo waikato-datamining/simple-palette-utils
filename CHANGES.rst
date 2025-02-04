@@ -1,13 +1,13 @@
 Changelog
 =========
 
-0.0.3 (2025-02-03)
+0.0.3 (2025-02-04)
 ------------------
 
 - exposed `color_lists` method
 
 
-0.0.2 (2025-02-03)
+0.0.2 (2025-02-04)
 ------------------
 
 - added methods `parse_rgb` and `parse_rgba`
