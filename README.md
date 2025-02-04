@@ -124,14 +124,14 @@ Overriding default PALETTE_GRAYSCALE with custom values:
 from simple_palette_utils import generate_palette_list, add_palette, PALETTE_GRAYSCALE
 
 gray_colors = [
-"#000000",
-"#202020",
-"#404040",
-"#606060",
-"#808080",
-"#A0A0A0",
-"#C0C0C0",
-"#E0E0E0",
+    "#000000",
+    "#202020",
+    "#404040",
+    "#606060",
+    "#808080",
+    "#A0A0A0",
+    "#C0C0C0",
+    "#E0E0E0",
 ]
 add_palette(PALETTE_GRAYSCALE, gray_colors)
 p = generate_palette_list(PALETTE_GRAYSCALE)
